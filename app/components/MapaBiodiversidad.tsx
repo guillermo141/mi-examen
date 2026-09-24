@@ -16,22 +16,6 @@ interface MapaBiodiversidadProps {
   onSeleccionarEspecie?: (nombre: string) => void;
 }
 
-function ControllerMapa({
-  coordenadas,
-  useMap,
-}: {
-  coordenadas: [number, number];
-  useMap: () => any;
-}) {
-  const map = useMap();
-  useEffect(() => {
-    if (map && coordenadas) {
-      map.setView(coordenadas, 6, { animate: true });
-    }
-  }, [coordenadas, map]);
-  return null;
-}
-
 export default function MapaBiodiversidad({
   aveId,
   onSeleccionarEspecie,
@@ -41,6 +25,7 @@ export default function MapaBiodiversidad({
   const [puntosAvistamiento, setPuntosAvistamiento] = useState<Observacion[]>([]);
   const [cargandoUbicaciones, setCargandoUbicaciones] = useState(false);
 
+  // Cargar React-Leaflet solo en el cliente
   useEffect(() => {
     setIsClient(true);
     Promise.all([import("react-leaflet"), import("leaflet")]).then(
@@ -60,12 +45,12 @@ export default function MapaBiodiversidad({
           TileLayer: reactLeaflet.TileLayer,
           Marker: reactLeaflet.Marker,
           Popup: reactLeaflet.Popup,
-          useMap: reactLeaflet.useMap,
         });
       }
     );
   }, []);
 
+  // Consultar avistamientos georreferenciados en iNaturalist cuando aveId cambia
   useEffect(() => {
     if (!aveId) return;
 
@@ -106,8 +91,9 @@ export default function MapaBiodiversidad({
     );
   }
 
-  const { MapContainer, TileLayer, Marker, Popup, useMap } = Components;
+  const { MapContainer, TileLayer, Marker, Popup } = Components;
 
+  // Centro según los avistamientos o México por defecto
   const centroActual: [number, number] =
     puntosAvistamiento.length > 0
       ? [puntosAvistamiento[0].latitude, puntosAvistamiento[0].longitude]
@@ -123,13 +109,12 @@ export default function MapaBiodiversidad({
       )}
 
       <MapContainer
+        key={aveId ? `mapa-ave-${aveId}` : "mapa-base"}
         center={centroActual}
-        zoom={6}
+        zoom={aveId && puntosAvistamiento.length > 0 ? 6 : 5}
         scrollWheelZoom={false}
         className="h-full w-full z-0"
       >
-        <ControllerMapa coordenadas={centroActual} useMap={useMap} />
-
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "./components/navbar/Navbar";
+import { Footer } from "./components/Footer";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -15,9 +16,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Mundo de Aves | Identificador de pajaros",
+  title: "Mundo de Aves | Identificador de pájaros",
   description:
-    "Busca cualquier ave y descubre su nombre cientifico, taxonomia y estado de conservacion.",
+    "Busca cualquier ave y descubre su nombre científico, taxonomía y estado de conservación.",
 };
 
 export default function RootLayout({
@@ -25,23 +26,10 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="es" className={`${fraunces.variable} ${inter.variable}`}>
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col antialiased bg-[#f2f5ed]">
         <Navbar />
-        <main className="flex-1 w-full max-w-4xl mx-auto px-6 pb-24">
-          {children}
-        </main>
-        <footer className="border-t border-[var(--color-borde)] py-6 text-center text-sm text-[var(--color-texto-tenue)]">
-          Datos de especies via{" "}
-          <a>
-            href="https://www.inaturalist.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline decoration-[var(--color-acento)] underline-offset-4 hover:text-[var(--color-texto)]"
-          
-            iNaturalist
-          </a>
-          .
-        </footer>
+        <main className="flex-1 w-full">{children}</main>
+        <Footer />
       </body>
     </html>
   );
